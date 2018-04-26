@@ -283,7 +283,7 @@ function registerVideoJsMarkersPlugin(options) {
     markerDiv.addEventListener('mouseover', () => {
       var marker = markersMap[markerDiv.getAttribute('data-marker-key')];
       if (!!markerTip) {
-        if (marker.html) {
+        if (setting.markerTip.html) {
           markerTip.querySelector('.vjs-tip-inner').innerHTML = setting.markerTip.html(marker);
         } else {
           markerTip.querySelector('.vjs-tip-inner').innerText = setting.markerTip.text(marker);
