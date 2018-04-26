@@ -32,6 +32,7 @@ const defaultSetting = {
     time: function(marker) {
       return marker.time;
     },
+    html: null
   },
   breakOverlay:{
     display: false,
@@ -282,7 +283,11 @@ function registerVideoJsMarkersPlugin(options) {
     markerDiv.addEventListener('mouseover', () => {
       var marker = markersMap[markerDiv.getAttribute('data-marker-key')];
       if (!!markerTip) {
-        markerTip.querySelector('.vjs-tip-inner').innerText = setting.markerTip.text(marker);
+        if (marker.html) {
+          markerTip.querySelector('.vjs-tip-inner').innerHTML = setting.markerTip.html(marker);
+        } else {
+          markerTip.querySelector('.vjs-tip-inner').innerText = setting.markerTip.text(marker);
+        }
         // margin-left needs to minus the padding length to align correctly with the marker
         markerTip.style.left = getPosition(marker) + '%';
         var markerTipBounding = getElementBounding(markerTip);
