@@ -11,7 +11,7 @@
     global.videojsMarkers = mod.exports;
   }
 })(this, function (_video) {
-  /*! videojs-markers - v1.0.2-alpha.1 - 2018-04-26
+  /*! videojs-markers - v1.0.2-alpha.2 - 2018-04-26
   * Copyright (c) 2018 ; Licensed  */
   'use strict';
 
@@ -294,7 +294,7 @@
       markerDiv.addEventListener('mouseover', function () {
         var marker = markersMap[markerDiv.getAttribute('data-marker-key')];
         if (!!markerTip) {
-          if (marker.html) {
+          if (setting.markerTip.html) {
             markerTip.querySelector('.vjs-tip-inner').innerHTML = setting.markerTip.html(marker);
           } else {
             markerTip.querySelector('.vjs-tip-inner').innerText = setting.markerTip.text(marker);
