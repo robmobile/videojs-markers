@@ -11,7 +11,7 @@
     global.videojsMarkers = mod.exports;
   }
 })(this, function (_video) {
-  /*! videojs-markers - v1.0.2-alpha.3 - 2018-05-01
+  /*! videojs-markers - v1.0.2-alpha.4 - 2018-05-01
   * Copyright (c) 2018 ; Licensed  */
   'use strict';
 
@@ -289,25 +289,65 @@
       sortMarkersList();
     }
 
+    function waitForRendering(el, callback, extra, timeout) {
+      var _check,
+          done = false,
+          timeout = timeout || 200,
+          extra = extra || 10,
+          count = 0; // Add a count to be safe
+
+      _check = function check() {
+        // Check if timeout already expired and the callback was already executed
+        if (done) {
+          return;
+        }
+
+        // Check if limit number of attempts hasn't been reached and
+        // the element is still not fully rendered
+        if (++count < 10 && !el.offsetWidth) {
+          window.requestAnimationFrame(_check);
+          return;
+        }
+
+        done = true;
+
+        // Just in case let's add an extra wait time
+        setTimeout(callback, extra);
+      };
+
+      _check();
+
+      if (!done) {
+        setTimeout(function () {
+          if (!done) {
+            callback();
+          }
+        }, timeout);
+      }
+    }
+
     // attach hover event handler
     function registerMarkerTipHandler(markerDiv) {
       markerDiv.addEventListener('mouseover', function () {
         var marker = markersMap[markerDiv.getAttribute('data-marker-key')];
+        var innerTip = markerTip.querySelector('.vjs-tip-inner');
         if (!!markerTip) {
           if (setting.markerTip.html) {
-            markerTip.querySelector('.vjs-tip-inner').innerHTML = setting.markerTip.html(marker);
+            innerTip.innerHTML = setting.markerTip.html(marker);
           } else {
-            markerTip.querySelector('.vjs-tip-inner').innerText = setting.markerTip.text(marker);
+            innerTip.innerText = setting.markerTip.text(marker);
           }
+
+          // margin-left needs to minus the padding length to align correctly with the marker
+          markerTip.style.left = getPosition(marker) + '%';
+
           // Allows html to render so below measurements can be accurate
-          setTimeout(function () {
-            // margin-left needs to minus the padding length to align correctly with the marker
-            markerTip.style.left = getPosition(marker) + '%';
+          waitForRendering(innerTip.firstChild || markerTip, function () {
             var markerTipBounding = getElementBounding(markerTip);
             var markerDivBounding = getElementBounding(markerDiv);
             markerTip.style.marginLeft = -parseFloat(markerTipBounding.width / 2) + parseFloat(markerDivBounding.width / 4) + 'px';
             markerTip.style.visibility = 'visible';
-          }, 1);
+          });
         }
       });
 
