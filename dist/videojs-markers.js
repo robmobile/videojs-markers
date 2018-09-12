@@ -11,7 +11,7 @@
     global.videojsMarkers = mod.exports;
   }
 })(this, function (_video) {
-  /*! videojs-markers - v1.0.2-alpha.4 - 2018-05-01
+  /*! videojs-markers - v1.0.2-alpha.4 - 2018-09-12
   * Copyright (c) 2018 ; Licensed  */
   'use strict';
 
@@ -326,9 +326,26 @@
       }
     }
 
+    function hideMarkerTip(markerDiv) {
+      markerTip.style.visibility = "hidden";
+      if (markerTip.__activeMarkerDiv == markerDiv) {
+        markerTip.__activeMarkerDiv = null;
+      }
+      if (markerDiv.__hideTimeout) {
+        clearTimeout(markerDiv.__hideTimeout);
+      }
+      markerDiv.__hideTimeout = null;
+    }
+
     // attach hover event handler
     function registerMarkerTipHandler(markerDiv) {
       markerDiv.addEventListener('mouseover', function () {
+        // console.log('Div mouserover');
+        if (markerTip.__activeMarkerDiv && markerTip.__activeMarkerDiv != markerDiv) {
+          hideMarkerTip(markerTip.__activeMarkerDiv);
+        }
+        markerTip.__activeMarkerDiv = markerDiv;
+
         var marker = markersMap[markerDiv.getAttribute('data-marker-key')];
         var innerTip = markerTip.querySelector('.vjs-tip-inner');
         if (!!markerTip) {
@@ -352,8 +369,11 @@
       });
 
       markerDiv.addEventListener('mouseout', function () {
-        if (!!markerTip) {
-          markerTip.style.visibility = "hidden";
+        // console.log('Div mouseout');
+        if (!!markerTip && !markerDiv.__hideTimeout) {
+          markerDiv.__hideTimeout = setTimeout(function () {
+            hideMarkerTip(markerDiv);
+          }, 300);
         }
       });
     }
@@ -364,6 +384,22 @@
         innerHTML: "<div class='vjs-tip-arrow'></div><div class='vjs-tip-inner'></div>"
       });
       player.el().querySelector('.vjs-progress-holder').appendChild(markerTip);
+
+      markerTip.addEventListener('mouseover', function () {
+        // console.log('Tip mouserover');
+        // Cancel marker tip timeout
+        if (markerTip.__activeMarkerDiv && markerTip.__activeMarkerDiv.__hideTimeout) {
+          clearTimeout(markerTip.__activeMarkerDiv.__hideTimeout);
+          markerTip.__activeMarkerDiv.__hideTimeout = null;
+        }
+      });
+
+      markerTip.addEventListener('mouseleave', function () {
+        // console.log('Tip mouseleave');
+        if (markerTip.__activeMarkerDiv) {
+          hideMarkerTip(markerTip.__activeMarkerDiv);
+        }
+      });
     }
 
     // show or hide break overlays
