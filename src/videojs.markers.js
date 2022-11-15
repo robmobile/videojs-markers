@@ -174,8 +174,15 @@ function registerVideoJsMarkersPlugin(options) {
     sortMarkersList();
   }
 
+  function getPlayerDuration() {
+    if (player.isLive()){
+      return player.liveTracker.seekableEnd();
+    }
+    return player.duration();
+  }
+
   function getPosition(marker: Marker): number {
-    return (setting.markerTip.time(marker) / player.duration()) * 100;
+    return (setting.markerTip.time(marker) / getPlayerDuration()) * 100;
   }
 
   function setMarkderDivStyle(marker: Marker, markerDiv: Object): void {
@@ -186,7 +193,7 @@ function registerVideoJsMarkersPlugin(options) {
     });
 
     // hide out-of-bound markers
-    const ratio = marker.time / player.duration();
+    const ratio = marker.time / getPlayerDuration();
     if (ratio < 0 || ratio > 1) {
       markerDiv.style.display = 'none';
     }
@@ -194,7 +201,7 @@ function registerVideoJsMarkersPlugin(options) {
     // set position
     markerDiv.style.left = getPosition(marker) + '%';
     if (marker.duration) {
-      markerDiv.style.width = (marker.duration / player.duration()) * 100 + '%';
+      markerDiv.style.width = (marker.duration / getPlayerDuration()) * 100 + '%';
       markerDiv.style.marginLeft = '0px';
     } else {
       const markerDivBounding = getElementBounding(markerDiv);
@@ -460,7 +467,7 @@ function registerVideoJsMarkersPlugin(options) {
         return setting.markerTip.time(markersList[index + 1]);
       }
       // next marker time of last marker would be end of video time
-      return player.duration();
+      return getPlayerDuration();
     }
     var currentTime = player.currentTime();
     var newMarkerIndex = NULL_INDEX;
@@ -478,7 +485,7 @@ function registerVideoJsMarkersPlugin(options) {
       // check for ending (at the end current time equals player duration)
       if (
         currentMarkerIndex === markersList.length - 1 &&
-        currentTime === player.duration()
+        currentTime === getPlayerDuration()
       ) {
         return;
       }

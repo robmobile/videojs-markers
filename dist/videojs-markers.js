@@ -11,8 +11,8 @@
     global.videojsMarkers = mod.exports;
   }
 })(this, function (_video) {
-  /*! videojs-markers - v1.0.2-alpha.4 - 2018-09-12
-  * Copyright (c) 2018 ; Licensed  */
+  /*! videojs-markers - v1.0.2-beta.1 - 2022-11-15
+  * Copyright (c) 2022 ; Licensed  */
   'use strict';
 
   var _video2 = _interopRequireDefault(_video);
@@ -185,8 +185,15 @@
       sortMarkersList();
     }
 
+    function getPlayerDuration() {
+      if (player.isLive()) {
+        return player.liveTracker.seekableEnd();
+      }
+      return player.duration();
+    }
+
     function getPosition(marker) {
-      return setting.markerTip.time(marker) / player.duration() * 100;
+      return setting.markerTip.time(marker) / getPlayerDuration() * 100;
     }
 
     function setMarkderDivStyle(marker, markerDiv) {
@@ -197,7 +204,7 @@
       });
 
       // hide out-of-bound markers
-      var ratio = marker.time / player.duration();
+      var ratio = marker.time / getPlayerDuration();
       if (ratio < 0 || ratio > 1) {
         markerDiv.style.display = 'none';
       }
@@ -205,7 +212,7 @@
       // set position
       markerDiv.style.left = getPosition(marker) + '%';
       if (marker.duration) {
-        markerDiv.style.width = marker.duration / player.duration() * 100 + '%';
+        markerDiv.style.width = marker.duration / getPlayerDuration() * 100 + '%';
         markerDiv.style.marginLeft = '0px';
       } else {
         var markerDivBounding = getElementBounding(markerDiv);
@@ -467,7 +474,7 @@
           return setting.markerTip.time(markersList[index + 1]);
         }
         // next marker time of last marker would be end of video time
-        return player.duration();
+        return getPlayerDuration();
       };
       var currentTime = player.currentTime();
       var newMarkerIndex = NULL_INDEX;
@@ -480,7 +487,7 @@
         }
 
         // check for ending (at the end current time equals player duration)
-        if (currentMarkerIndex === markersList.length - 1 && currentTime === player.duration()) {
+        if (currentMarkerIndex === markersList.length - 1 && currentTime === getPlayerDuration()) {
           return;
         }
       }
