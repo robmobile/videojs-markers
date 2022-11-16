@@ -531,6 +531,7 @@
       }
       onTimeUpdate();
       player.on("timeupdate", onTimeUpdate);
+      player.on("seekableendchange", () => updateMarkers(true))
       player.off("loadedmetadata");
     }
 
