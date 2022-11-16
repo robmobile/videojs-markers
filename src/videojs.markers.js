@@ -138,7 +138,7 @@ function registerVideoJsMarkersPlugin(options) {
       return el;
     }
   }
-  
+
 
   /**
    * register the markers plugin (dependent on jquery)
@@ -196,6 +196,8 @@ function registerVideoJsMarkersPlugin(options) {
     const ratio = marker.time / getPlayerDuration();
     if (ratio < 0 || ratio > 1) {
       markerDiv.style.display = 'none';
+    } else {
+      markerDiv.style.display = '';
     }
 
     // set position
@@ -206,7 +208,7 @@ function registerVideoJsMarkersPlugin(options) {
     } else {
       const markerDivBounding = getElementBounding(markerDiv);
       markerDiv.style.marginLeft = markerDivBounding.width / 2 + 'px';
-    }    
+    }
   }
 
   function createMarkerDiv(marker: Marker): Object {
@@ -358,7 +360,7 @@ function registerVideoJsMarkersPlugin(options) {
         waitForRendering(innerTip.firstChild || markerTip, function () {
           var markerTipBounding = getElementBounding(markerTip);
           var markerDivBounding = getElementBounding(markerDiv);
-          markerTip.style.marginLeft = 
+          markerTip.style.marginLeft =
             -parseFloat(markerTipBounding.width / 2) + parseFloat(markerDivBounding.width / 4) + 'px';
           markerTip.style.visibility = 'visible';
         });
