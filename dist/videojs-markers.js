@@ -207,6 +207,8 @@
       var ratio = marker.time / getPlayerDuration();
       if (ratio < 0 || ratio > 1) {
         markerDiv.style.display = 'none';
+      } else {
+        markerDiv.style.display = '';
       }
 
       // set position
