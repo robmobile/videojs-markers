@@ -11,7 +11,7 @@
     global.videojsMarkers = mod.exports;
   }
 })(this, function (_video) {
-  /*! videojs-markers - v1.0.2-beta.1 - 2022-11-15
+  /*! videojs-markers - v1.0.2-beta.1 - 2022-11-16
   * Copyright (c) 2022 ; Licensed  */
   'use strict';
 
@@ -531,7 +531,9 @@
       }
       onTimeUpdate();
       player.on("timeupdate", onTimeUpdate);
-      player.on("seekableendchange", () => updateMarkers(true))
+      player.on("seekableendchange", function () {
+        return updateMarkers(true);
+      });
       player.off("loadedmetadata");
     }
 
